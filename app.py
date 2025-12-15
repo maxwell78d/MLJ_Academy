@@ -139,6 +139,11 @@ def format_youtube_url(url: str | None) -> str | None:
         return f"https://www.youtube.com/embed/{video_id}"
     return url
 
+
+@app.route("/ping")
+def ping():
+    return "OK"
+
 # ============================================================
 # CONTEXT PROCESSOR
 # ============================================================
