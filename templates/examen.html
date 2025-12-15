@@ -1,0 +1,11 @@
+<h2>{{ examen[2] }}</h2>
+<p>{{ examen[3] }}</p>
+
+<br>
+<a href="/nivel/{{ examen[1] }}">⬅ Volver al nivel</a>
+
+{% if session.get("rol") == "admin" %}
+    <br><br>
+    <a href="/admin/examenes/editar/{{ examen[0] }}">✏ Editar</a>
+    <a href="/admin/examenes/eliminar/{{ examen[0] }}" style="color:red;">🗑 Eliminar</a>
+{% endif %}

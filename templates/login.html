@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mljAcademy</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+  <script defer src="{{ url_for('static', filename='anim.js') }}"></script>
+</head>
+<body>
+
+  <!-- 🌟 PANTALLA DE BIENVENIDA -->
+  <section class="hero">
+    <div class="overlay"></div>
+    <div class="hero-content">
+      <h1>Bienvenido a <span>mljAcademy</span></h1>
+      <p>Tu plataforma para aprender, crecer y transformar el futuro digital.</p>
+      <p>Explora nuestros cursos, impulsa tus habilidades y únete a una comunidad apasionada por la tecnología.</p>
+      <button onclick="window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });">
+        Iniciar sesión o registrarse
+      </button>
+    </div>
+  </section>
+
+  <!-- 💻 SECCIÓN LOGIN / REGISTER (ESTILO CUBEFACTORY) -->
+  <section class="login-section">
+    <div class="login-container container">
+      
+      <!-- Panel izquierdo: formulario -->
+      <div class="form-panel fade-element">
+        <div class="logo">mljAcademy</div>
+
+        <div class="form-content">
+          <p class="subtitle">Ingresa tus datos para continuar</p>
+
+          <!-- Pestañas Login / Registro -->
+          <div class="tab-buttons">
+            <button class="tab-btn active" type="button" onclick="showTab('login', this)">Login</button>
+            <button class="tab-btn" type="button" onclick="showTab('signup', this)">Registro</button>
+          </div>
+
+          <!-- Formulario de Login -->
+          <form id="login" class="form active" method="POST" action="{{ url_for('login') }}">
+            <h2>Inicia sesión</h2>
+            <p class="form-subtitle">Ingresa tus credenciales para acceder.</p>
+
+            <div class="input-group">
+              <label for="correo">Correo electrónico</label>
+              <input type="email" id="correo" name="correo" required>
+            </div>
+
+            <div class="input-group">
+              <label for="password">Contraseña</label>
+              <input type="password" id="password" name="contraseña" required>
+            </div>
+
+            <div class="options">
+              <label class="remember-me">
+                <input type="checkbox" name="remember">
+                Recordarme por 30 días
+              </label>
+              <!-- Cambia el href cuando tengas la ruta de recuperación -->
+              <a href="{{ url_for('recuperar') }}" class="forgot-password">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            {% if error %}
+            <p class="error">{{ error }}</p>
+            {% endif %}
+
+            <button type="submit" class="sign-in-button">Entrar</button>
+
+            <p class="signup-link">
+              ¿No tienes una cuenta?
+              <a href="javascript:void(0);" onclick="showTab('signup')">Regístrate</a>
+            </p>
+          </form>
+
+          <!-- Formulario de Registro -->
+          <form id="signup" class="form" method="POST" action="{{ url_for('registro') }}">
+            <h2>Regístrate</h2>
+            <p class="form-subtitle">Crea tu cuenta y comienza a aprender.</p>
+
+            <div class="input-group">
+              <label for="nombre">Nombre completo</label>
+              <input type="text" id="nombre" name="nombre" required>
+            </div>
+
+            <div class="input-group">
+              <label for="correo-registro">Correo electrónico</label>
+              <input type="email" id="correo-registro" name="correo" required>
+            </div>
+
+            <div class="input-group">
+              <label for="password-registro">Contraseña</label>
+              <input type="password" id="password-registro" name="contraseña" required>
+            </div>
+
+            <button type="submit" class="sign-in-button">Crear cuenta</button>
+
+            <p class="signup-link">
+              ¿Ya tienes una cuenta?
+              <a href="javascript:void(0);" onclick="showTab('login')">Inicia sesión</a>
+            </p>
+          </form>
+        </div>
+      </div>
+
+      <!-- Panel derecho: imagen tipo CubeFactory -->
+      <div class="image-panel fade-element">
+        <div class="image-overlay">
+          <h1>Impulsa tu futuro digital.</h1>
+          <p>Accede a cursos y recursos tecnológicos gratuitos para transformar tu vida.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <script>
+    // Cambio de pestañas Login / Registro
+    function showTab(tab, button) {
+      const forms = document.querySelectorAll(".form");
+      const buttons = document.querySelectorAll(".tab-btn");
+
+      forms.forEach(f => f.classList.remove("active"));
+      buttons.forEach(b => b.classList.remove("active"));
+
+      const form = document.getElementById(tab);
+      if (form) form.classList.add("active");
+
+      // Si viene desde el botón de arriba
+      if (button) {
+        button.classList.add("active");
+      } else {
+        // Si viene desde los enlaces dentro del formulario
+        const index = tab === "login" ? 0 : 1;
+        if (buttons[index]) buttons[index].classList.add("active");
+      }
+    }
+
+    // Animación con scroll (manteniendo tu lógica)
+    window.addEventListener("scroll", () => {
+      const hero = document.querySelector(".hero");
+      const container = document.querySelector(".container");
+      const fadeElements = document.querySelectorAll(".fade-element");
+
+      // Desvanecer la pantalla de bienvenida
+      if (window.scrollY > window.innerHeight / 3) {
+        hero.classList.add("fade-out");
+      } else {
+        hero.classList.remove("fade-out");
+      }
+
+      // Mostrar login gradualmente
+      if (container) {
+        const rect = container.getBoundingClientRect();
+        if (rect.top < window.innerHeight - 100) {
+          container.classList.add("visible");
+        }
+      }
+
+      fadeElements.forEach(el => {
+        const position = el.getBoundingClientRect().top;
+        if (position < window.innerHeight - 100) {
+          el.classList.add("visible");
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

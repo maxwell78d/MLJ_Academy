@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Administrar Cursos</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+.container-box {
+    max-width: 750px;
+    margin-top: 80px;
+}
+.btn-big {
+    padding: 18px;
+    font-size: 18px;
+}
+</style>
+</head>
+<body class="bg-light">
+
+<div class="container container-box">
+
+    <h2 class="text-center mb-4">Administración de Cursos</h2>
+
+    <a href="http://127.0.0.1:5000/" class="btn btn-secondary" style="margin-bottom: 15px;">
+    ⬅ Volver 
+</a>
+
+
+    <div class="d-grid gap-4">
+
+        <button class="btn btn-primary btn-big"
+                onclick="location.href='/admin/cursos/agregar'">
+            ➕ Agregar Curso
+        </button>
+
+        <button class="btn btn-warning btn-big"
+                onclick="location.href='/admin/cursos/editar'">
+            ✏️ Editar Curso
+        </button>
+
+        <button class="btn btn-danger btn-big"
+                onclick="location.href='/admin/cursos/borrar'">
+            🗑 Borrar Cursos
+        </button>
+
+    </div>
+
+</div>
+
+</body>
+</html>

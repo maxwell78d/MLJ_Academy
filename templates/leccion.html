@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ leccion[2] }}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body { 
+            background: #f5f7fa; 
+        }
+
+        /* ===========================
+           ESTILOS DEL MENU (SIDEBAR)
+           =========================== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -260px;
+            width: 260px;
+            height: 100vh;
+            background: #111;
+            padding-top: 65px;
+            transition: left 0.3s ease;
+            z-index: 1050;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            color: #fff;
+            padding: 12px 20px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .sidebar a:hover {
+            background: #333;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .menu-btn {
+            font-size: 26px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: #222;
+            color: #fff;
+            border: none;
+            font-size: 18px;
+            padding: 15px 20px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            z-index: 1051;
+        }
+
+        .close-btn:hover {
+            background: #444;
+        }
+
+        /* ===========================
+           ESTILOS DE LA LECCIÓN
+           =========================== */
+        .main-content {
+            margin-top: 90px; /* Espacio para el navbar fijo */
+        }
+
+        .card { 
+            border-radius: 12px; 
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08); 
+        }
+        
+        .contenido { 
+            line-height: 1.7; 
+            font-size: 1.05rem; 
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #000;
+        }
+        
+        .video-container iframe {
+            position: absolute; 
+            width: 100%; 
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ==========================================
+     1. BARRA LATERAL (SIDEBAR - SOLO ADMIN)
+     ========================================== -->
+{% if session.get('rol') == 'admin' %}
+<div class="sidebar" id="sidebar">
+    <button class="close-btn" onclick="toggleMenu()">✖ Cerrar</button>
+
+    <strong style="color: #ccc; padding: 10px 20px 5px; display: block; font-size: 0.9em;">NAVEGACIÓN PRINCIPAL</strong>
+
+    <a href="/">Inicio</a>
+    <a href="/sobre">Sobre</a>
+    <a href="/contacto">Donde estamos?</a>
+
+    <hr style="border-top: 1px solid #333; margin: 10px 0;">
+
+    <strong style="color: #ccc; padding: 10px 20px 5px; display: block; font-size: 0.9em;">HERRAMIENTAS DE ADMINISTRACIÓN</strong>
+    <a href="/admin/cursos">Gestionar Cursos</a>
+    <a href="/admin/usuarios">Lista de Usuarios</a>
+    <a href="/admin/config">Ajustes del Sistema</a>
+
+    <hr style="border-top: 1px solid #333; margin: 10px 0;">
+
+    <a href="/logout">Cerrar Sesión</a>
+</div>
+{% endif %}
+
+<!-- ==========================================
+     2. BARRA DE NAVEGACIÓN SUPERIOR (NAVBAR)
+     ========================================== -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
+    <div class="container">
+
+        <div class="d-flex align-items-center">
+            {% if session.get('rol') == 'admin' %}
+                <span class="menu-btn me-3" onclick="toggleMenu()">☰</span>
+            {% endif %}
+
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <img src="{{ url_for('static', filename='img/logo1.png') }}"
+                    alt="Logo"
+                    style="height: 35px; margin-right: 10px;">
+                MljAcademy
+            </a>
+        </div>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="menuNav">
+            <ul class="navbar-nav ms-auto">
+
+                {% if session.get('rol') == 'admin' %}
+
+                    <li class="nav-item">
+                        <span class="nav-link text-warning">Panel de Administración</span>
+                    </li>
+
+                    <li class="nav-item d-flex align-items-center ms-3">
+                        <a href="/perfil" class="d-flex align-items-center text-decoration-none text-light">
+                            <img src="{{ url_for('static', filename='img/perfiles/' + session.get('foto_perfil', 'perfil.png')) }}"
+                                class="rounded-circle"
+                                width="32" height="32"
+                                style="object-fit: cover; margin-right: 8px;">
+                            <span>{{ session.get('nombre_usuario', 'Admin') }}</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <a class="btn btn-outline-light btn-sm px-3" href="/logout">
+                            Salir
+                        </a>
+                    </li>
+
+                {% else %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Inicio</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/sobre">Nosotros</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contacto">Contacto</a>
+                    </li>
+
+                    {% if session.get('nombre_usuario') %}
+                        <!-- Usuario logueado -->
+                        <li class="nav-item d-flex align-items-center ms-3">
+                            <a href="/perfil" class="d-flex align-items-center text-decoration-none text-light">
+                                <img src="{{ url_for('static', filename='img/perfiles/' + session.get('foto_perfil', 'perfil.png')) }}"
+                                    class="rounded-circle"
+                                    width="32" height="32"
+                                    style="object-fit: cover; margin-right: 8px;">
+                                <span>{{ session.get('nombre_usuario') }}</span>
+                            </a>
+                        </li>
+
+                    {% else %}
+                        <!-- Usuario NO logueado -->
+                        <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                            <a class="btn btn-primary btn-sm px-3" href="/login">
+                                Iniciar Sesión
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ==========================================
+     3. CONTENIDO DE LA LECCIÓN
+     ========================================== -->
+<div class="container main-content mb-5">
+
+    <div class="card p-4">
+
+        <h2 class="mb-3">{{ leccion[2] }}</h2>
+
+        <div class="contenido mb-4">
+            {{ leccion[3] | safe }}
+        </div>
+
+        {% if leccion[4] %}
+        <h5 class="mt-4">Video de la lección</h5>
+        <div class="video-container mb-4">
+            {# 
+               Convertir URLs de YouTube normales a formato embed.
+               Soporta:
+               - https://www.youtube.com/watch?v=VIDEO_ID
+               - https://youtu.be/VIDEO_ID
+               Si no es YouTube, usa la URL tal cual.
+            #}
+            {% set url = leccion[4] %}
+            {% if 'youtube.com/watch?v=' in url %}
+                {% set video_id = url.split('watch?v=')[1].split('&')[0] %}
+                {% set embed_url = 'https://www.youtube.com/embed/' ~ video_id %}
+            {% elif 'youtu.be/' in url %}
+                {% set video_id = url.split('youtu.be/')[1].split('?')[0] %}
+                {% set embed_url = 'https://www.youtube.com/embed/' ~ video_id %}
+            {% else %}
+                {% set embed_url = url %}
+            {% endif %}
+
+            <iframe src="{{ embed_url }}" frameborder="0" allowfullscreen></iframe>
+        </div>
+        {% endif %}
+
+        {% if leccion[5] %}
+        <div class="pdf-box mb-4">
+            <strong>Material complementario:</strong><br>
+            <a href="/static/uploads/{{ leccion[5] }}" class="btn btn-outline-primary btn-sm mt-2" download>
+                Descargar PDF
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Navegación -->
+        <div class="d-flex justify-content-between mt-4 mb-4">
+
+            {% if leccion_anterior %}
+            <a href="/leccion/{{ leccion_anterior }}" class="btn btn-outline-secondary">&laquo; Anterior</a>
+            {% else %}
+            <div></div>
+            {% endif %}
+
+            <!-- Ajuste el enlace de volver para que lleve a la lista de lecciones del curso -->
+            <a href="/cursos" class="btn btn-secondary">⬅ Volver a Cursos</a>
+
+            {% if leccion_siguiente %}
+            <a href="/leccion/{{ leccion_siguiente }}" class="btn btn-primary">Siguiente &raquo;</a>
+            {% else %}
+            <a href="/curso/{{ curso_id }}/examen" class="btn btn-success">Ir al examen final</a>
+            {% endif %}
+
+        </div>
+
+        <!-- Exámenes del curso -->
+        {% if examenes %}
+            <h3 class="mt-4">Exámenes del curso</h3>
+            {% for ex in examenes %}
+                <a href="/examen/{{ ex[0] }}" class="btn btn-outline-primary mt-2">
+                    Examen: {{ ex[1] }}
+                </a><br>
+            {% endfor %}
+        {% endif %}
+
+    </div>
+
+</div>
+
+<!-- Scripts de Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script para manejar el Sidebar -->
+<script>
+    function toggleMenu() {
+        var sidebar = document.getElementById('sidebar');
+        if (sidebar) {
+            sidebar.classList.toggle('open');
+        }
+    }
+</script>
+
+</body>
+</html>

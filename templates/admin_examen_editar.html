@@ -1,0 +1,14 @@
+<h2>Editar examen</h2>
+
+<form method="POST">
+    <label>Título</label>
+    <input type="text" name="titulo" value="{{ examen[2] }}" required>
+
+    <label>Descripción</label>
+    <textarea name="descripcion">{{ examen[3] }}</textarea>
+
+    <button type="submit">Actualizar</button>
+</form>
+
+<br>
+<a href="/examen/{{ examen[0] }}">⬅ Volver</a>

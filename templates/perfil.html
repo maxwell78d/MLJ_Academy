@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Perfil</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='perfil.css') }}">
+</head>
+<body class="container py-4">
+
+<h2 class="text-center mb-4">Mi Perfil</h2>
+
+<form method="POST" enctype="multipart/form-data" class="card p-4 mx-auto" style="max-width:450px">
+
+    <div class="text-center mb-3">
+
+        <!-- CLICK EN LA FOTO → ABRE EL INPUT -->
+  <label for="foto" style="cursor: pointer;">
+    <img src="{{ session.get('foto_perfil', 'img/perfiles/perfil.png') | url_for('static', filename=_) }}"
+         class="perfil-foto"
+         style="width:150px; height:150px; border-radius:50%; object-fit:cover;">
+</label>
+
+<input type="file" id="foto" name="foto" accept="image/*"
+       style="display:none" onchange="this.form.submit()">
+
+
+        <!-- INPUT OCULTO QUE SE ACTIVA AL HACER CLICK EN LA FOTO -->
+        <input type="file" id="foto" name="foto" style="display:none;" accept="image/*" onchange="this.form.submit()">
+
+    </div>
+
+    <label>Nombre:</label>
+    <input type="text" name="nombre" class="form-control mb-2"
+           value="{{ session.get('nombre','') }}">
+
+    <label>Email:</label>
+    <input type="email" name="email" class="form-control mb-3"
+           value="{{ session.get('email','') }}">
+
+    <button class="btn btn-primary w-100">Guardar Cambios</button>
+</form>
+
+<!-- Botón Dark/Light Mode -->
+<div class="text-center mt-4">
+    <button class="btn btn-dark" onclick="toggleTheme()">🌙 Modo Oscuro</button>
+</div>
+
+<script>
+function toggleTheme() {
+    let theme = localStorage.getItem("theme");
+
+    if (theme === "dark") {
+        localStorage.setItem("theme", "light");
+        document.body.classList.remove("dark");
+    } else {
+        localStorage.setItem("theme", "dark");
+        document.body.classList.add("dark");
+    }
+}
+
+if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark");
+}
+</script>
+
+</body>
+</html>

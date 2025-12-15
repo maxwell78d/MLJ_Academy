@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mljacademy</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css">
+    <script src="{{ url_for('static', filename='theme.js') }}">
+
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    /* === SLIDE BAR === */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -260px;
+        width: 260px;
+        height: 100vh;
+        background: #111;
+        padding-top: 65px;
+        transition: left 0.3s ease;
+        z-index: 1050;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+    }
+
+    .sidebar a {
+        display: flex;
+        align-items: center;
+        color: #fff;
+        padding: 12px 20px;
+        text-decoration: none;
+        font-size: 16px;
+    }
+
+    .sidebar a:hover {
+        background: #333;
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .menu-btn {
+        font-size: 26px;
+        cursor: pointer;
+        color: white;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #222;
+        color: #fff;
+        border: none;
+        font-size: 18px;
+        padding: 15px 20px;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        z-index: 1051;
+    }
+
+    .close-btn:hover {
+        background: #444;
+    }
+
+    /* === DROPDOWN PERSONALIZADO === */
+    .dropdown-menu {
+        background: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 8px 0;
+        min-width: 200px;
+    }
+
+    .dropdown-header-custom {
+        padding: 12px 16px;
+        border-bottom: 1px solid #333;
+    }
+
+    .dropdown-item {
+        color: #fff;
+        padding: 10px 16px;
+        transition: background 0.2s ease;
+    }
+
+    .dropdown-item:hover {
+        background: #333;
+        color: #fff;
+    }
+
+    .dropdown-item i {
+        width: 20px;
+        text-align: center;
+    }
+
+    .dropdown-divider {
+        border-color: #333;
+        margin: 8px 0;
+    }
+
+    .user-dropdown-btn {
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 25px;
+        transition: background 0.2s ease;
+    }
+
+    .user-dropdown-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+</style>
+
+</head>
+<body>
+
+{% if session.get('rol') == 'admin' %}
+<div class="sidebar" id="sidebar">
+    <button class="close-btn" onclick="toggleMenu()">✖ Cerrar</button>
+
+    <strong style="color: #ccc; padding: 10px 20px 5px; display: block; font-size: 0.9em;">NAVEGACIÓN PRINCIPAL</strong>
+
+    <a href="/">Inicio</a>
+    <a href="/sobre">Sobre</a>
+    <a href="/contacto">Donde estamos?</a>
+
+    <hr style="border-top: 1px solid #333; margin: 10px 0;">
+
+    <strong style="color: #ccc; padding: 10px 20px 5px; display: block; font-size: 0.9em;">HERRAMIENTAS DE ADMINISTRACIÓN</strong>
+    <a href="/admin/cursos">Gestionar Cursos</a>
+    <a href="/admin/usuarios">Lista de Usuarios</a>
+    <a href="/admin/config">Ajustes del Sistema</a>
+
+    <hr style="border-top: 1px solid #333; margin: 10px 0;">
+
+    <a href="/logout">Cerrar Sesión</a>
+</div>
+{% endif %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
+    <div class="container">
+
+        <div class="d-flex align-items-center">
+            {% if session.get('rol') == 'admin' %}
+                <span class="menu-btn me-3" onclick="toggleMenu()">☰</span>
+            {% endif %}
+
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <img src="{{ url_for('static', filename='img/logo1.png') }}"
+                    alt="Logo"
+                    style="height: 35px; margin-right: 10px;">
+                MljAcademy
+            </a>
+        </div>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="menuNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+
+                {% if session.get('rol') == 'admin' %}
+                    <!-- ========== ADMIN ========== -->
+                    <li class="nav-item">
+                        <span class="nav-link text-warning">Panel de Administración</span>
+                    </li>
+
+                    <!-- DROPDOWN ADMIN -->
+                    <li class="nav-item dropdown ms-3">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center text-light user-dropdown-btn p-0" 
+                           href="#" 
+                           id="adminDropdown" 
+                           role="button" 
+                           data-bs-toggle="dropdown" 
+                           aria-expanded="false">
+                            <img src="{{ url_for('static', filename='img/perfiles/' + session.get('foto_perfil', 'perfil.png')) }}"
+                                class="rounded-circle border border-secondary"
+                                width="36" height="36"
+                                style="object-fit: cover; margin-right: 8px;">
+                            <span>{{ session.get('nombre_usuario', 'Admin') }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+                            <!-- Header del dropdown -->
+                            <li class="dropdown-header-custom">
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ url_for('static', filename='img/perfiles/' + session.get('foto_perfil', 'perfil.png')) }}"
+                                        class="rounded-circle me-2"
+                                        width="45" height="45"
+                                        style="object-fit: cover;">
+                                    <div>
+                                        <strong class="text-white">{{ session.get('nombre_usuario', 'Admin') }}</strong>
+                                        <small class="d-block text-warning">Administrador</small>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><a class="dropdown-item" href="/perfil">
+                                <i class="bi bi-person me-2"></i>Mi Perfil
+                            </a></li>
+                            <li><a class="dropdown-item" href="/admin/config">
+                                <i class="bi bi-gear me-2"></i>Configuración
+                            </a></li>
+                            <li><a class="dropdown-item" href="/admin/usuarios">
+                                <i class="bi bi-people me-2"></i>Usuarios
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/logout">
+                                <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                            </a></li>
+                        </ul>
+                    </li>
+
+                {% else %}
+                    <!-- ========== USUARIO NORMAL ========== -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/sobre">Nosotros</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contacto">Contacto</a>
+                    </li>
+
+                    {% if session.get('nombre_usuario') %}
+                        <!-- DROPDOWN USUARIO LOGUEADO -->
+                        <li class="nav-item dropdown ms-3">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center text-light user-dropdown-btn p-0" 
+                               href="#" 
+                               id="userDropdown" 
+                               role="button" 
+                               data-bs-toggle="dropdown" 
+                               aria-expanded="false">
+                                <img src="{{ url_for('static', filename='img/perfiles/' + session.get('foto_perfil', 'perfil.png')) }}"
+                                    class="rounded-circle border border-secondary"
+                                    width="36" height="36"
+                                    style="object-fit: cover; margin-right: 8px;">
+                                <span>{{ session.get('nombre_usuario') }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <!-- Header del dropdown -->
+                                <li class="dropdown-header-custom">
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ url_for('static', filename='img/perfiles/' + session.get('foto_perfil', 'perfil.png')) }}"
+                                            class="rounded-circle me-2"
+                                            width="45" height="45"
+                                            style="object-fit: cover;">
+<div>
+                                            <div class="user-name">{{ session.get('nombre_usuario') }}</div>
+                                            <small class="user-role text-info">👤 Usuario</small>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li><a class="dropdown-item" href="/perfil">👤 Mi Perfil</a></li>
+                                <li><a class="dropdown-item" href="/mis-cursos">📚 Mis Cursos</a></li>
+                                <li><a class="dropdown-item" href="/configuracion">⚙️ Configuración</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="/logout">🚪 Cerrar Sesión</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <!-- USUARIO NO LOGUEADO -->
+                        <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                            <a class="btn btn-primary btn-sm px-3" href="/login">
+                                Iniciar Sesión
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div style="height: 75px;"></div>
+
+<div class="home-container">
+    <div class="home-grid">
+
+        <div class="home-card" onclick="location.href='/cursos'">
+            <img src="{{ url_for('static', filename='img/cursos.png') }}" alt="Cursos">
+            <span>CURSOS</span>
+        </div>
+
+        <div class="home-card" onclick="location.href='/ubicacion'">
+            <img src="{{ url_for('static', filename='img/ubicacion.png') }}" alt="Ubicación">
+            <span>UBICACIÓN</span>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function toggleMenu() {
+        document.getElementById("sidebar").classList.toggle("open");
+    }
+</script>
+
+</body>
+<style>
+ html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+</style>
+<footer class="footer bg-dark text-light pt-4 pb-4">
+    <div class="container text-center">
+
+        <!-- Redes sociales -->
+        <div class="mb-3">
+            <a href="#" class="text-light mx-3 fs-3">
+                <i class="bi bi-facebook"></i>
+            </a>
+            <a href="#  " class="text-light mx-3 fs-3">
+                <i class="bi bi-instagram"></i>
+            </a>
+            <a href="#" class="text-light mx-3 fs-3">
+                <i class="bi bi-youtube"></i>
+            </a>
+        </div>
+
+        <!-- Enlaces legales -->
+        <div class="mb-2">
+            <a href="#" class="text-light mx-2 text-decoration-none">Términos legales</a> |
+            <a href="#" class="text-light mx-2 text-decoration-none">Política de privacidad</a> |
+            <a href="#" class="text-light mx-2 text-decoration-none">Ayuda</a>
+        </div>
+
+        <!-- Copyright -->
+        <p class="mb-0">© 2025 MljAcademy | Todos los derechos reservados</p>
+    </div>
+</footer>
+
+
+</body>
+</html>

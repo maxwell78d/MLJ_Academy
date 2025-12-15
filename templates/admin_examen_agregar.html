@@ -1,0 +1,43 @@
+<h2>Crear examen para: {{ curso.titulo }}</h2>
+
+<form action="/admin/examenes/crear/{{ curso.id }}" method="POST">
+    <label>Título del examen:</label>
+    <input type="text" name="titulo" required>
+
+    <label>Descripción:</label>
+    <textarea name="descripcion"></textarea>
+
+    <hr>
+
+    <h3>Preguntas</h3>
+
+    <div id="preguntas">
+        <div class="pregunta">
+            <input type="text" name="pregunta[]" placeholder="Pregunta" required>
+            <select name="correcta[]">
+                <option value="V">Verdadero</option>
+                <option value="F">Falso</option>
+            </select>
+        </div>
+    </div>
+
+    <button type="button" onclick="agregar()">Agregar otra pregunta</button>
+    <br><br>
+    <button type="submit">Guardar examen</button>
+</form>
+
+<script>
+function agregar() {
+    let div = document.createElement("div");
+    div.classList.add("pregunta");
+    div.innerHTML = `
+        <input type="text" name="pregunta[]" placeholder="Pregunta" required>
+        <select name="correcta[]">
+            <option value="V">Verdadero</option>
+            <option value="F">Falso</option>
+        </select>
+        <br><br>
+    `;
+    document.getElementById("preguntas").appendChild(div);
+}
+</script>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #4a90e2, #0052a3);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            width: 380px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #0052a3;
+        }
+
+        p {
+            text-align: center;
+            font-size: 14px;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #0052a3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #003d7a;
+        }
+
+        .volver {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            text-decoration: none;
+            color: #0052a3;
+            font-size: 14px;
+        }
+
+        .volver:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Recuperar Contraseña</h2>
+        <p>Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.</p>
+
+        <form method="POST">
+            <label for="correo">Correo electrónico</label>
+            <input type="email" name="correo" id="correo" placeholder="tuemail@example.com" required>
+
+            <button type="submit">Enviar enlace</button>
+        </form>
+
+        <a class="volver" href="/login">Volver al login</a>
+    </div>
+
+</body>
+</html>

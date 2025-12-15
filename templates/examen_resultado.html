@@ -1,0 +1,12 @@
+<h2>Resultado del examen</h2>
+
+<p>Correctas: {{ correcto }} / {{ total }}</p>
+<p>Nota final: <strong>{{ nota }}</strong></p>
+
+{% if aprobado %}
+    <h3 style="color: green;">Aprobado</h3>
+{% else %}
+    <h3 style="color: red;">Reprobado</h3>
+{% endif %}
+
+<a href="/">Volver al inicio</a>

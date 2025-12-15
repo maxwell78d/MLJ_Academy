@@ -1,0 +1,27 @@
+.navbar {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+}
+
+.navbar-brand {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.navbar-nav .nav-link {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1rem;
+    color: #fff !important;
+    margin-left: 10px;
+    transition: color 0.2s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--accent-color) !important;
+}
+
+.btn-primary {
+    font-size: 0.9rem;
+    border-radius: 6px;
+}

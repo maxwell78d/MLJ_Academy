@@ -1,0 +1,88 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* HEADER */
+.header {
+    background: #007bff;
+    color: white;
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header a {
+    color: white;
+    margin-left: 20px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.logo {
+    margin: 0;
+}
+
+/* TITULO */
+.titulo-oferta {
+    font-size: 36px;
+    text-align: center;
+    margin-top: 30px;
+}
+
+/* CURSOS */
+.cursos-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 40px 0;
+}
+
+.card {
+    background: white;
+    width: 280px;
+    padding: 25px;
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+
+.card-img {
+    font-size: 18px;
+    background: #f1f1f1;
+    padding: 30px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.btn {
+    display: inline-block;
+    background: #007bff;
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+/* 🌙 Modo oscuro */
+body.dark-mode {
+    background: #121212;
+    color: #ffffff;
+}
+
+/* Tarjetas, contenedores, botones ajustados */
+.dark-mode .home-card,
+.dark-mode .navbar,
+.dark-mode .card,
+.dark-mode .lesson-box {
+    background: #1e1e1e !important;
+    color: white !important;
+    border-color: #333;
+}
+
+/* Textos */
+.dark-mode a, .dark-mode span, .dark-mode h1, .dark-mode h2, .dark-mode h3 {
+    color: white !important;
+}

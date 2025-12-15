@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Curso – Wizard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .wizard-step { display: none; }
+        .wizard-step.active { display: block; }
+        .step-title { font-weight: bold; }
+        .disabled-step { opacity: 0.5; pointer-events: none; }
+    </style>
+</head>
+
+<body class="bg-light">
+
+<div class="container py-4">
+
+    <h2 class="mb-4">Crear Nuevo Curso</h2>
+
+        <a href="/admin/cursos" class="btn btn-secondary" style="margin-bottom: 15px;">
+    ⬅ Volver 
+        </a>
+
+    <!-- PROGRESO -->
+    <div class="d-flex justify-content-between mb-4">
+        <div id="p1" class="step-title text-primary">1. Datos del Curso</div>
+        <div id="p2" class="step-title text-secondary disabled-step">2. Niveles</div>
+        <div id="p3" class="step-title text-secondary disabled-step">3. Lecciones</div>
+    </div>
+
+    <!-- ============================ PASO 1 ============================== -->
+    <div id="step1" class="wizard-step active border rounded p-3">
+        <h4 class="mb-3">Datos del Curso</h4>
+
+        <form id="formPaso1">
+            <label class="form-label">Nombre del Curso</label>
+            <input type="text" class="form-control mb-3" id="course_name" required>
+
+            <label class="form-label">Descripción</label>
+            <textarea class="form-control mb-3" id="course_desc" rows="3" required></textarea>
+
+            <label class="form-label">Imagen del curso</label>
+            <input type="file" class="form-control mb-3" id="course_image" accept="image/*">
+
+            <button type="button" class="btn btn-primary" onclick="nextStep1()">Continuar con Niveles →</button>
+        </form>
+    </div>
+
+    <!-- ============================ PASO 2 ============================== -->
+    <div id="step2" class="wizard-step border rounded p-3">
+        <h4 class="mb-3">Niveles del Curso</h4>
+
+        <p class="text-muted">El curso inicia con un nivel por defecto. Puedes agregar más.</p>
+
+        <div id="listaNiveles"></div>
+
+        <div class="input-group mt-3">
+            <input type="text" id="nuevoNivel" class="form-control" placeholder="Nombre del nivel">
+            <button class="btn btn-secondary" onclick="agregarNivel()">Agregar nivel</button>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <button class="btn btn-outline-secondary" onclick="volverPaso1()">← Atrás</button>
+            <button class="btn btn-primary" onclick="nextStep2()">Continuar con Lecciones →</button>
+        </div>
+    </div>
+
+    <!-- ============================ PASO 3 ============================== -->
+    <div id="step3" class="wizard-step border rounded p-3">
+        <h4 class="mb-3">Agregar Lecciones</h4>
+
+        <label class="form-label">Selecciona Nivel</label>
+        <select id="selectNivel" class="form-control mb-3"></select>
+
+        <label class="form-label">Título de la Lección</label>
+        <input type="text" id="lesson_title" class="form-control mb-3">
+
+        <label class="form-label">Contenido</label>
+        <textarea id="lesson_content" class="form-control mb-3" rows="4"></textarea>
+
+        <label class="form-label">Video URL</label>
+        <input type="text" id="lesson_video" class="form-control mb-3">
+
+        <label class="form-label">Archivo PDF</label>
+        <input type="file" id="lesson_pdf" class="form-control mb-3" accept="application/pdf">
+
+        <button class="btn btn-success" onclick="guardarLeccion()">Guardar Lección</button>
+
+        <div class="d-flex justify-content-between mt-4">
+            <button class="btn btn-outline-secondary" onclick="volverPaso2()">← Atrás</button>
+            <button class="btn btn-primary" onclick="finalizarCurso()">Finalizar Curso ✔</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// =============================== VARIABLES GLOBALES ===============================
+let cursoID = null;
+let niveles = [];
+let nivelIDs = [];
+
+// =============================== CONTROL DEL WIZARD ===============================
+function activarPaso(num) {
+    document.querySelectorAll(".wizard-step").forEach(s => s.classList.remove("active"));
+    document.getElementById("step" + num).classList.add("active");
+
+    ["p1","p2","p3"].forEach(x => {
+        document.getElementById(x).classList.remove("text-primary");
+    });
+
+    document.getElementById("p" + num).classList.add("text-primary");
+}
+
+// =============================== PASO 1 (Crear Curso) ===============================
+async function nextStep1() {
+    const name = document.getElementById("course_name").value.trim();
+    const desc = document.getElementById("course_desc").value.trim();
+    const img = document.getElementById("course_image").files[0];
+
+    if (!name || !desc) {
+        alert("Completa los datos del curso.");
+        return;
+    }
+
+    let form = new FormData();
+    form.append("titulo", name);
+    form.append("descripcion", desc);
+    if (img) form.append("imagen", img);
+
+    let res = await fetch("/api/cursos/crear", { method: "POST", body: form });
+    let data = await res.json();
+
+    if (!data.curso_id) {
+        alert("Error creando el curso.");
+        return;
+    }
+
+    cursoID = data.curso_id;
+
+    if (niveles.length === 0) {
+        niveles.push("Nivel 1");
+    }
+    
+    renderNiveles();
+
+    document.getElementById("p2").classList.remove("disabled-step");
+    activarPaso(2);
+}
+
+function volverPaso1() { activarPaso(1); }
+
+// =============================== NIVELES ===============================
+function agregarNivel() {
+    const nombre = document.getElementById("nuevoNivel").value.trim();
+    if (!nombre) return alert("Escribe un nombre para el nivel.");
+
+    niveles.push(nombre);
+    document.getElementById("nuevoNivel").value = "";
+    renderNiveles();
+}
+
+function renderNiveles() {
+    const cont = document.getElementById("listaNiveles");
+    const sel = document.getElementById("selectNivel");
+
+    cont.innerHTML = "";
+    sel.innerHTML = "";
+
+    niveles.forEach((n, idx) => {
+        cont.innerHTML += `
+            <div class="p-2 border rounded mb-2 d-flex justify-content-between">
+                <span>${n}</span>
+                <button class="btn btn-sm btn-danger" onclick="eliminarNivel(${idx})">X</button>
+            </div>
+        `;
+        sel.innerHTML += `<option>${n}</option>`;
+    });
+}
+
+function eliminarNivel(i) {
+    niveles.splice(i, 1);
+    renderNiveles();
+}
+
+// =============================== PASO 2 (Guardar Niveles) ===============================
+async function nextStep2() {
+    if (niveles.length === 0) {
+        alert("Debe haber al menos un nivel.");
+        return;
+    }
+
+    let res = await fetch("/api/cursos/agregar_niveles", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            curso_id: cursoID,
+            niveles: niveles
+        })
+    });
+
+    let data = await res.json();
+
+    if (!data.nivel_ids) {
+        alert("Error guardando niveles.");
+        return;
+    }
+
+    nivelIDs = data.nivel_ids;
+
+    document.getElementById("p3").classList.remove("disabled-step");
+    activarPaso(3);
+}
+
+function volverPaso2() { activarPaso(2); }
+
+// =============================== GUARDAR LECCIÓN ===============================
+async function guardarLeccion() {
+    const idx = document.getElementById("selectNivel").selectedIndex;
+    const nivelID = nivelIDs[idx];
+
+    const title = document.getElementById("lesson_title").value.trim();
+    const cont = document.getElementById("lesson_content").value.trim();
+    const video = document.getElementById("lesson_video").value.trim();
+    const pdf = document.getElementById("lesson_pdf").files[0];
+
+    if (!title) return alert("Escribe un título.");
+
+    let form = new FormData();
+    form.append("nivel_id", nivelID);
+    form.append("titulo", title);
+    form.append("contenido", cont);
+    form.append("video_url", video);
+    if (pdf) form.append("pdf", pdf);
+
+    await fetch("/api/cursos/agregar_leccion", {
+        method: "POST",
+        body: form
+    });
+
+    alert("Lección guardada.");
+}
+
+// =============================== FINALIZAR ===============================
+function finalizarCurso() {
+    alert("Curso creado correctamente.");
+    window.location.href = "/admin/cursos";
+}
+
+</script>
+
+</body>
+</html>

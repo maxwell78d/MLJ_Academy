@@ -1,0 +1,28 @@
+<h2>{{ examen[2] }}</h2>
+<p>{{ examen[3] }}</p>
+
+<form action="/examen/{{ examen[0] }}/resolver" method="POST">
+
+    {% for p in preguntas %}
+        <div class="pregunta-box">
+            <p><strong>{{ loop.index }}.</strong> {{ p[2] }}</p>
+
+            <label>
+                <input type="radio" name="{{ p[0] }}" value="V" required> Verdadero
+            </label>
+
+            <label>
+                <input type="radio" name="{{ p[0] }}" value="F" required> Falso
+            </label>
+
+        </div>
+
+        <hr>
+    {% endfor %}
+
+    <button type="submit">Enviar examen</button>
+</form>
+
+<style>
+    .pregunta-box { margin-bottom: 20px; }
+</style>
